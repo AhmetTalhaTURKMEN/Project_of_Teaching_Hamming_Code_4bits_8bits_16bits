@@ -7,15 +7,10 @@ This project teaches Hamming code
 ![Screenshot_3](https://user-images.githubusercontent.com/75725469/191243286-4f65da67-7527-47c6-81b8-779a42799fde.png)
 
 
-### Example error ###
-
 <h2>
 
 ```diff
-- red
-+ green
-! orange
-# gray
+  Example error
 ```
 
 </h2>
