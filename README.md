@@ -9,4 +9,15 @@ This project teaches Hamming code
 
 ### Example error ###
 
+<h2>
+
+```diff
+- red
++ green
+! orange
+# gray
+```
+
+</h2>
+
 ![example error](https://user-images.githubusercontent.com/75725469/191244182-9abec39b-aaf4-4087-a0d5-cade31f9e5b0.png)
