@@ -9,9 +9,9 @@ This project teaches Hamming code
 
 <h2>
 
-                                            ```diff
-                                            -Example error-
-                                            ```
+```diff
+-Example error-
+```
 
 </h2>
 
