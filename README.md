@@ -6,6 +6,6 @@ This project teaches Hamming code
 ### You can create error with buttons ###
 ![Screenshot_3](https://user-images.githubusercontent.com/75725469/191243286-4f65da67-7527-47c6-81b8-779a42799fde.png)
 
-- ![#f03c15](https://via.placeholder.com/15/f03c15/f03c15.png) `#f03c15`
+-! Warning !-
 ### Example error ###
 ![example error](https://user-images.githubusercontent.com/75725469/191244182-9abec39b-aaf4-4087-a0d5-cade31f9e5b0.png)
