@@ -8,6 +8,6 @@ This project teaches Hamming code
 
 ```diff
 
-- Example error 
+Example error 
 
 ![example error](https://user-images.githubusercontent.com/75725469/191244182-9abec39b-aaf4-4087-a0d5-cade31f9e5b0.png)
