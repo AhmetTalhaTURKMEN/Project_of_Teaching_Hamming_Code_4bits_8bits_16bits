@@ -10,7 +10,7 @@ This project teaches Hamming code
 <h2>
 
 ```diff
-                                              -Example error-
+                               -Example error-
 ```
 
 </h2>
