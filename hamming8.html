@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>8 Bits</title>
+    <link rel="icon" href="8.png" type="image/x-icon">
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            table-layout: fixed;
+            text-align: center;
+        }
+
+        button {
+            margin: 0;
+            padding: 0;
+            height: 30px;
+            width: 40px;
+            background-color: #ff5349;
+        }
+    </style>
+</head>
+
+<body>
+    <p style="font-size:35px;">Data input:</p>
+    <div style="position: absolute; left: 180px; top: 43px;"><input type="text" id="num" name="data" required
+            minlength="8" maxlength="9" size="10">
+        <button id="input">input</button><br>
+    </div>
+    <div style="position: absolute; left: 450px; top: 0px;">
+        <p style="font-size:35px;">Stored Bit:</p>
+    </div>
+    <div style="position: absolute; left: 610px; top: 48px;"><span id="dataBitOut"></span></div>
+    <table id="storedTable" style="width:100% ">
+        <tr>
+            <th>Bit Position</th>
+            <th>12</th>
+            <th>11</th>
+            <th>10</th>
+            <th>9</th>
+            <th bgcolor="orange">8</th>
+            <th>7</th>
+            <th>6</th>
+            <th>5</th>
+            <th bgcolor="orange">4</th>
+            <th>3</th>
+            <th bgcolor="orange">2</th>
+            <th bgcolor="orange">1</th>
+        </tr>
+        <tr>
+            <th>Position Number Binary</th>
+            <td id="pos12"></td>
+            <td id="pos11"></td>
+            <td id="pos10"></td>
+            <td id="pos9"></td>
+            <td bgcolor="orange" id="pos8"></td>
+            <td id="pos7"></td>
+            <td id="pos6"></td>
+            <td id="pos5"></td>
+            <td bgcolor="orange" id="pos4"></td>
+            <td id="pos3"></td>
+            <td bgcolor="orange" id="pos2"></td>
+            <td bgcolor="orange" id="pos1"></td>
+        </tr>
+        <tr>
+            <th>Data and check Bit</th>
+            <td>D8</td>
+            <td>D7</td>
+            <td>D6</td>
+            <td>D5</td>
+            <td bgcolor="orange">C8</td>
+            <td>D4</td>
+            <td>D3</td>
+            <td>D2</td>
+            <td bgcolor="orange">C4</td>
+            <td>D1</td>
+            <td bgcolor="orange">C2</td>
+            <td bgcolor="orange">C1</td>
+        </tr>
+        <tr>
+            <th>Stored Word</th>
+            <td id="data12"></td>
+            <td id="data11"></td>
+            <td id="data10"></td>
+            <td id="data9"></td>
+            <td bgcolor="orange" id="data8"></td>
+            <td id="data7"></td>
+            <td id="data6"></td>
+            <td id="data5"></td>
+            <td bgcolor="orange" id="data4"></td>
+            <td id="data3"></td>
+            <td bgcolor="orange" id="data2"></td>
+            <td bgcolor="orange" id="data1"></td>
+        </tr>
+        <tr>
+            <th>Choose One to Change</th>
+            <td><button id="b12"></button></td>
+            <td><button id="b11"></button></td>
+            <td><button id="b10"></button></td>
+            <td><button id="b9"></button></td>
+            <td bgcolor="orange"></td>
+            <td><button id="b8"></button></td>
+            <td><button id="b7"></button></td>
+            <td><button id="b6"></button></td>
+            <td bgcolor="orange"></td>
+            <td><button id="b5"></button></td>
+            <td bgcolor="orange"></td>
+            <td bgcolor="orange"></td>
+        </tr>
+        <tr>
+            <th>Fetch Word</th>
+            <td id="change12"></td>
+            <td id="change11"></td>
+            <td id="change10"></td>
+            <td id="change9"></td>
+            <td bgcolor="orange" id="change8"></td>
+            <td id="change7"></td>
+            <td id="change6"></td>
+            <td id="change5"></td>
+            <td bgcolor="orange" id="change4"></td>
+            <td id="change3"></td>
+            <td bgcolor="orange" id="change2"></td>
+            <td bgcolor="orange" id="change1"></td>
+        </tr>
+    </table>
+    <div style="width:100%; overflow: hidden;">
+        <div style="width:33%;float: left;">
+            <h2>Calculation of Check bit:</h2>
+            <div style="width:70%;float:right;"><span id="calcCheck"></span>
+                <div style="text-indent:35px;line-height: 1;"><span style="background-color:orange;"
+                        id="checkBitOut"></span></div><br>
+            </div>
+        </div>
+        <div style="width:33%;float:right;">
+            <h2>Calculation of Syndrome:</h2>
+            <div style="text-indent:150px;line-height: 0.7;"><span style="background-color:red;"
+                    id="fetchXorOut"></span></div><br>
+            <div style="text-indent:150px;line-height: 0.7;"><span style="background-color:orange;"
+                    id="checkBitOut2"></span></div><br>
+            <div style="text-indent:115px; line-height: 0.7;"><span id="xorSymbol"></span></div>
+            <div style="text-indent:150px;line-height: 1.8;"><span id="calcSyndrome"></span></div>
+        </div>
+        <div style="width:33%;margin: 0 auto;">
+            <h2>Calculation of False Check bit:</h2>
+            <div style="width:70%;float:right;"><span id="calcFalseCheck"></span>
+                <div style="text-indent:35px;line-height: 1;"><span style="background-color:red;"
+                        id="fetchXorOutFalse"></span></div><br>
+            </div>
+        </div>
+    </div>
+    <div style="position: absolute; left: 1010px; top: 30px;"><button style="width: 75px;height: 60px;"
+            id="errorGenerator">Random Error Generator</button></div>
+
+    <script>
+        document.getElementById('num').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/[^0-1]/g, '').replace(/(.{4})/g, '$1 ').trim();
+        });
+
+        var inputButton = document.getElementById("input");
+
+        for (u = 5; u <= 12; u++) {
+            document.getElementById('b' + u).style.visibility = 'hidden';
+        }
+        document.getElementById('errorGenerator').style.visibility = 'hidden';
+        inputButton.onclick = function () {
+            var input = document.getElementById("num");
+            var b5 = document.getElementById("b5");
+            var b6 = document.getElementById("b6");
+            var b7 = document.getElementById("b7");
+            var b8 = document.getElementById("b8");
+            var b9 = document.getElementById("b9");
+            var b10 = document.getElementById("b10");
+            var b11 = document.getElementById("b11");
+            var b12 = document.getElementById("b12");
+            if (input.value.length == 9) {
+                for (u = 5; u <= 12; u++) {
+                    document.getElementById('b' + u).style.visibility = 'visible';
+                }
+                document.getElementById('errorGenerator').style.visibility = 'visible';
+                document.getElementById('input').style.visibility = 'hidden';
+                var y = input.value.split('');
+                const index = y.indexOf(' ');
+                if (index > -1) {
+                    y.splice(index, 1);
+                }
+                array1 = [];
+                array_stored = [];
+                array_change = [];
+                array_change_decimal = [];
+                for (var i = 0; i < y.length; i++) {
+                    if (y[i] == 1) {
+                        if (8 - i == 1) {
+                            array1[i] = 8 - i + 2
+                            array_change_decimal[i] = 8 - i + 2
+                        }
+                        else if (5 <= 8 - i) {
+                            array1[i] = 8 - i + 4
+                            array_change_decimal[i] = 8 - i + 4
+
+                        }
+                        else if (4 <= 8 - i <= 2) {
+                            array1[i] = 8 - i + 3
+                            array_change_decimal[i] = 8 - i + 3
+
+                        }
+                    }
+                }
+                function ORofArray(XOR, num) {
+                    return XOR ^ num;
+                }
+                if (array1.length > 0) {
+                    function checkBitXor() {
+                        xorData = array1.reduce(ORofArray);
+                        xorDataBinary = Number(xorData).toString(2).padStart(4, "0");
+                        document.getElementById("checkBitOut").innerHTML = xorDataBinary;
+                        document.getElementById("checkBitOut2").innerHTML = xorDataBinary;
+                        document.getElementById("xorSymbol").innerHTML = "⊕_________";
+                        xorDataElement = xorDataBinary.toString().split("");
+                        for (a = 0; a < xorDataElement.length; a++) {
+                            array_stored[2 ** a] = xorDataElement[xorDataElement.length - 1 - a];
+                        }
+                        array_stored[3] = y[7];
+                        array_stored[5] = y[6];
+                        array_stored[6] = y[5];
+                        array_stored[7] = y[4];
+                        array_stored[9] = y[3];
+                        array_stored[10] = y[2];
+                        array_stored[11] = y[1];
+                        array_stored[12] = y[0];
+                    }
+                    checkBitXor();
+                }
+                else {
+                    xorData = 0;
+                    xorDataBinary = String(xorData).padStart(4, '0');
+                    document.getElementById("checkBitOut").innerHTML = xorDataBinary;
+                    document.getElementById("checkBitOut2").innerHTML = xorDataBinary;
+                    document.getElementById("xorSymbol").innerHTML = "⊕_________";
+                    xorDataElement = xorDataBinary.toString().split("");
+                    for (a = 0; a < xorDataElement.length; a++) {
+                        array_stored[2 ** a] = xorDataElement[xorDataElement.length - 1 - a];
+                    }
+                    array_stored[3] = y[7];
+                    array_stored[5] = y[6];
+                    array_stored[6] = y[5];
+                    array_stored[7] = y[4];
+                    array_stored[9] = y[3];
+                    array_stored[10] = y[2];
+                    array_stored[11] = y[1];
+                    array_stored[12] = y[0];
+
+                }
+                function dataBitOut() {
+                    document.getElementById("dataBitOut").innerHTML = array_stored.reverse().join('');
+                }
+                dataBitOut();
+                function tableOut() {
+                    document.getElementById("calcCheck").innerHTML = "";
+
+                    for (z = 1; z <= 12; z++) {
+                        document.getElementById("data" + z).innerHTML = array_stored[12 - z];
+                        array_change[12 - z] = array_stored[12 - z];
+                        document.getElementById("change" + z).innerHTML = array_change[12 - z];
+                        document.getElementById("pos" + z).innerHTML = Number(z).toString(2).padStart(4, "0");
+                        if (array_stored[12 - z] == 1 && z != 1 && z != 2 && z != 4 && z != 8) {
+                            document.getElementById("data" + z).style.backgroundColor = "#01acca";
+                            document.getElementById("pos" + z).style.backgroundColor = "#01acca";
+                            document.getElementById("calcCheck").innerHTML += "<p style=text-indent:35px;>" + Number(z).toString(2).padStart(4, "0") + "</p>";
+                        }
+                        if (array_stored[12 - z] == 0 && z != 1 && z != 2 && z != 4 && z != 8) {
+                            document.getElementById("data" + z).style.backgroundColor = "white";
+                            document.getElementById("pos" + z).style.backgroundColor = "white";
+                        }
+                        if (array_change[12 - z] == 1 && z != 1 && z != 2 && z != 4 && z != 8) {
+                            document.getElementById("change" + z).style.backgroundColor = "#01acca";
+                        }
+                        if (array_change[12 - z] == 0 && z != 1 && z != 2 && z != 4 && z != 8) {
+                            document.getElementById("change" + z).style.backgroundColor = "white";
+                        }
+
+                    }
+                    document.getElementById("calcCheck").innerHTML += "⊕_________";
+                }
+                tableOut();
+                errorGenerator.onclick = function () {
+                    errorArray = [];
+                    for (i = 0; i <= 3; i++) {
+                        errorArray[i] = i;
+                    }
+                    for (i = 5; i <= 7; i++) {
+                        errorArray[i - 1] = i;
+                    }
+                    errorArray[7] = 9;
+                    var item = errorArray[Math.floor(Math.random() * errorArray.length)];
+                    if (item == 0) {
+                        b12.onclick();
+                    }
+                    if (item == 1) {
+                        b11.onclick();
+                    }
+                    if (item == 2) {
+                        b10.onclick();
+                    }
+                    if (item == 3) {
+                        b9.onclick();
+                    }
+                    if (item == 5) {
+                        b8.onclick();
+                    }
+                    if (item == 6) {
+                        b7.onclick();
+                    }
+                    if (item == 7) {
+                        b6.onclick();
+                    }
+                    if (item == 9) {
+                        b5.onclick();
+                    }
+                    document.getElementById('errorGenerator').style.visibility = 'hidden';
+                }
+                function buttonFunction() {
+                    array_change_1 = [];
+                    for (var i = 0; i < y.length + 2; i++) {
+                        if (array_change[i] == 1) {
+                            if (i == 9) {
+                                array_change_1[i] = 3
+                            }
+                            else if (5 <= 8 - i) {
+                                array_change_1[i] = 12 - i
+                            }
+                            else if (i <= 7 && i >= 5) {
+                                array_change_1[i] = 12 - i
+                            }
+                        }
+                    }
+                    if (array_change_1.length == 0) {
+                        xorFetch = 0;
+                    }
+                    if (array_change_1.length > 0) {
+                        xorFetch = array_change_decimal.reduce(ORofArray);
+                    }
+                    xorFetchBinary = Number(xorFetch).toString(2).padStart(4, "0");
+                    document.getElementById("fetchXorOut").innerHTML = xorFetchBinary;
+                    document.getElementById("fetchXorOutFalse").innerHTML = xorFetchBinary;
+                    document.getElementById("calcSyndrome").innerHTML = Number(xorData ^ xorFetch).toString(2).padStart(4, "0") + " <==Syndrome (" + Number(xorData ^ xorFetch) + "th bit position is wrong)";
+                    for (z = 1; z <= 12; z++) {
+                        if (array_change[12 - z] == 1 && z != 1 && z != 2 && z != 4 && z != 8) {
+                            document.getElementById("calcFalseCheck").innerHTML += "<p style=text-indent:35px;>" + Number(z).toString(2).padStart(4, "0") + "</p>";
+                        }
+                    }
+                    document.getElementById("calcFalseCheck").innerHTML += "⊕_________";
+                    for (u = 5; u <= 12; u++) {
+                        document.getElementById('b' + u).style.visibility = 'hidden';
+                    }
+                    document.getElementById('errorGenerator').style.visibility = 'hidden';
+                }
+                b12.onclick = function () {
+                    if (array_change[0] == 1) {
+                        document.getElementById("change12").innerHTML = 0;
+                        array_change[0] = 0;
+                        delete array_change_decimal[0];
+                        document.getElementById("change12").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                    else if (array_change[0] == 0) {
+                        document.getElementById("change12").innerHTML = 1;
+                        array_change_decimal[0] = 12;
+                        array_change[0] = 1;
+                        document.getElementById("change12").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                }
+                b11.onclick = function () {
+                    if (array_change[1] == 1) {
+                        document.getElementById("change11").innerHTML = 0;
+                        delete array_change_decimal[1];
+                        array_change[1] = 0;
+                        document.getElementById("change11").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                    else if (array_change[1] == 0) {
+                        document.getElementById("change11").innerHTML = 1;
+                        array_change_decimal[1] = 11;
+                        array_change[1] = 1;
+                        document.getElementById("change11").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                }
+                b10.onclick = function () {
+                    if (array_change[2] == 1) {
+                        document.getElementById("change10").innerHTML = 0;
+                        delete array_change_decimal[2];
+                        array_change[2] = 0;
+                        document.getElementById("change10").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                    else if (array_change[2] == 0) {
+                        document.getElementById("change10").innerHTML = 1;
+                        array_change_decimal[2] = 10;
+                        array_change[2] = 1;
+                        document.getElementById("change10").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                }
+                b9.onclick = function () {
+                    if (array_change[3] == 1) {
+                        document.getElementById("change9").innerHTML = 0;
+                        delete array_change_decimal[3];
+                        array_change[3] = 0;
+                        document.getElementById("change9").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                    else if (array_change[3] == 0) {
+                        document.getElementById("change9").innerHTML = 1;
+                        array_change_decimal[3] = 9;
+                        array_change[3] = 1;
+                        document.getElementById("change9").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                }
+                b8.onclick = function () {
+                    if (array_change[5] == 1) {
+                        document.getElementById("change7").innerHTML = 0;
+                        delete array_change_decimal[4];
+                        array_change[5] = 0;
+                        document.getElementById("change7").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                    else if (array_change[5] == 0) {
+                        document.getElementById("change7").innerHTML = 1;
+                        array_change_decimal[4] = 7;
+                        array_change[5] = 1;
+                        document.getElementById("change7").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                }
+                b7.onclick = function () {
+                    if (array_change[6] == 1) {
+                        document.getElementById("change6").innerHTML = 0;
+                        delete array_change_decimal[5];
+                        array_change[6] = 0;
+                        document.getElementById("change6").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                    else if (array_change[6] == 0) {
+                        document.getElementById("change6").innerHTML = 1;
+                        array_change_decimal[5] = 6;
+                        array_change[6] = 1;
+                        document.getElementById("change6").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                }
+                b6.onclick = function () {
+                    if (array_change[7] == 1) {
+                        document.getElementById("change5").innerHTML = 0;
+                        delete array_change_decimal[6];
+                        array_change[7] = 0;
+                        document.getElementById("change5").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                    else if (array_change[7] == 0) {
+                        document.getElementById("change5").innerHTML = 1;
+                        array_change_decimal[6] = 5;
+                        array_change[7] = 1;
+                        document.getElementById("change5").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                }
+                b5.onclick = function () {
+                    if (array_change[9] == 1) {
+                        document.getElementById("change3").innerHTML = 0;
+                        delete array_change_decimal[7];
+                        array_change[9] = 0;
+                        document.getElementById("change3").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                    else if (array_change[9] == 0) {
+                        document.getElementById("change3").innerHTML = 1;
+                        array_change_decimal[7] = 3;
+                        array_change[9] = 1;
+                        document.getElementById("change3").style.backgroundColor = "red";
+                        buttonFunction();
+                    }
+                }
+            }
+        }        
+    </script>
+</body>
+
+</html>
